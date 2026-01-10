@@ -36,7 +36,7 @@ class ScrapeJob < ApplicationJob
   private
 
   def generate_fingerprint(songs)
-    sorted_data = songs.sort_by { |s| s[:rank] }.map { |s| [s[:rank], s[:title], s[:artist], s[:last_week]] }
-    Digest::SHA256.hexdigest(sorted_data.to_json)
+    sorted_data = songs.sort_by { |s| s[:rank] }.map { |s| "#{s[:rank]}:#{s[:title]}" }.join('|')
+    Digest::SHA256.hexdigest(sorted_data)
   end
 end

@@ -1,6 +1,6 @@
 class Api::V1::ChartsController < ApplicationController
   def diff_latest
-    charts = Chart.order(created_at: :desc).first(2)
+    charts = Chart.order(created_at: :desc).limit(2)
     if charts.size < 2
       render json: { error: 'Not enough charts to compare' }, status: :bad_request
       return
@@ -37,7 +37,7 @@ class Api::V1::ChartsController < ApplicationController
   end
 
   def history
-    charts = Chart.order(created_at: :desc).pluck(:chart_date).map { |date| { chart_date: date } }
+    charts = Chart.order(chart_date: :desc).pluck(:chart_date).map { |date| { chart_date: date } }
     render json: charts
   end
 end
