@@ -5,7 +5,7 @@ class ScrapeJob < ApplicationJob
     scraped_songs = BillboardScraper.scrape
     new_fingerprint = generate_fingerprint(scraped_songs)
 
-    latest_chart = Chart.order(created_at: :desc).first
+    latest_chart = Chart.order(chart_date: :desc).first
 
     if latest_chart&.fingerprint == new_fingerprint
       Rails.logger.info "ランキングに変更なし。保存スキップ"

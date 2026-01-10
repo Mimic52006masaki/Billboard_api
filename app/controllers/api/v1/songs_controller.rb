@@ -9,7 +9,7 @@ class Api::V1::SongsController < ApplicationController
         render json: { error: 'Chart not found' }, status: :not_found
       end
     else
-      chart = Chart.order(created_at: :desc).first
+      chart = Chart.order(chart_date: :desc).first
       if chart
         songs = chart.songs.order(:rank)
         render json: songs
