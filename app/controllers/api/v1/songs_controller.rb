@@ -1,7 +1,22 @@
 class Api::V1::SongsController < ApplicationController
   def index
-    songs = Song.where(chart_date: params[:chart_date] || Date.today).order(:rank)
-    render json: songs
+    if params[:chart_date]
+      chart = Chart.find_by(chart_date: params[:chart_date])
+      if chart
+        songs = chart.songs.order(:rank)
+        render json: songs
+      else
+        render json: { error: 'Chart not found' }, status: :not_found
+      end
+    else
+      chart = Chart.order(created_at: :desc).first
+      if chart
+        songs = chart.songs.order(:rank)
+        render json: songs
+      else
+        render json: []
+      end
+    end
   end
 
   def show

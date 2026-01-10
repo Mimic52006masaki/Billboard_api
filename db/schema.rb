@@ -10,9 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_02_040713) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_10_134416) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "charts", force: :cascade do |t|
+    t.string "fingerprint"
+    t.date "chart_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "songs", force: :cascade do |t|
     t.integer "rank"
@@ -22,5 +29,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_02_040713) do
     t.date "chart_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "chart_id", null: false
+    t.index ["chart_id"], name: "index_songs_on_chart_id"
   end
+
+  add_foreign_key "songs", "charts"
 end

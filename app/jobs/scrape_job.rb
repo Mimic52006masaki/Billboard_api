@@ -1,25 +1,42 @@
 class ScrapeJob < ApplicationJob
   queue_as :default
 
-  def perform(chart_date = Date.today)
-    results = BillboardScraper.scrape
-    imported = 0
+  def perform
+    scraped_songs = BillboardScraper.scrape
+    new_fingerprint = generate_fingerprint(scraped_songs)
 
-    Song.transaction do
-      results.each do |row|
-        song = Song.find_or_initialize_by(rank: row[:rank], chart_date: chart_date)
-        song.assign_attributes(
-          title: row[:title],
-          artist: row[:artist],
-          last_week: row[:last_week]
+    latest_chart = Chart.order(created_at: :desc).first
+
+    if latest_chart&.fingerprint == new_fingerprint
+      Rails.logger.info "ランキングに変更なし。保存スキップ"
+      return 0
+    end
+
+    Chart.transaction do
+      chart = Chart.create!(
+        chart_date: Date.current,
+        fingerprint: new_fingerprint
+      )
+
+      scraped_songs.each do |song_data|
+        chart.songs.create!(
+          rank: song_data[:rank],
+          title: song_data[:title],
+          artist: song_data[:artist],
+          last_week: song_data[:last_week]
         )
-        song.save!
-        imported += 1
       rescue => e
-        Rails.logger.warn("Failed to save song rank #{row[:rank]}: #{e.message}")
+        Rails.logger.warn("Failed to save song rank #{song_data[:rank]}: #{e.message}")
         next
       end
     end
-    imported
-  end        
+    scraped_songs.size
+  end
+
+  private
+
+  def generate_fingerprint(songs)
+    sorted_data = songs.sort_by { |s| s[:rank] }.map { |s| [s[:rank], s[:title], s[:artist], s[:last_week]] }
+    Digest::SHA256.hexdigest(sorted_data.to_json)
+  end
 end

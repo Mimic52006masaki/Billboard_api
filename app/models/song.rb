@@ -1,4 +1,5 @@
 class Song < ApplicationRecord
-  validates :rank, presence: true, uniqueness: {scope: :chart_date}
+  belongs_to :chart
+  validates :rank, presence: true
   validates :title, :artist, presence: true
 end

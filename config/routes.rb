@@ -3,6 +3,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :songs, only: [:index, :show]
       post 'scrapes', to: 'scrapes#create'
+      get 'charts/diff/latest', to: 'charts#diff_latest'
+      get 'charts/history', to: 'charts#history'
     end
   end
 end
