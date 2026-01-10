@@ -40,4 +40,14 @@ class Api::V1::ChartsController < ApplicationController
     charts = Chart.order(chart_date: :desc).pluck(:chart_date).map { |date| { chart_date: date } }
     render json: charts
   end
+
+  def destroy
+    chart = Chart.find_by(chart_date: params[:chart_date])
+    if chart
+      chart.destroy
+      render json: { message: 'Chart deleted successfully' }
+    else
+      render json: { error: 'Chart not found' }, status: :not_found
+    end
+  end
 end

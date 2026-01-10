@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       post 'scrapes', to: 'scrapes#create'
       get 'charts/diff/latest', to: 'charts#diff_latest'
       get 'charts/history', to: 'charts#history'
+      delete 'charts/:chart_date', to: 'charts#destroy'
     end
   end
 end
