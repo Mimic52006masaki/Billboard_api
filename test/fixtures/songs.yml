@@ -6,6 +6,7 @@ one:
   artist: MyString
   last_week: 1
   chart_date: 2025-11-02
+  chart: one
 
 two:
   rank: 1
@@ -13,3 +14,4 @@ two:
   artist: MyString
   last_week: 1
   chart_date: 2025-11-02
+  chart: two

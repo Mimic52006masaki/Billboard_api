@@ -25,7 +25,11 @@ class BillboardScraper
         # artist: try a few patterns
         artist = nil        
         if (a = row.at_css('span.a-no-trucate'))
-          artist = a.at_css('a') ? a.at_css('a').text.strip : a.text.strip
+          # Billboard links only some of the credited artists, so reading the
+          # inner <a> drops the rest ("Belly Gang Kushington & 21 Savage" became
+          # "21 Savage"). Take the whole span instead and squeeze the markup
+          # whitespace the credit string is formatted with.
+          artist = a.text.gsub(/\s+/, ' ').strip
         else
           # fallback: second .c-label that isn't rank
           labels = row.css('span.c-label').map {|s| s.text.strip}
